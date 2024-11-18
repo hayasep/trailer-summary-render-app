@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Summary</title>
+</head>
+<body>
+    <h1>Summary</h1>
+    {{ tables|safe }}
+    {% if img %}
+    <img src="data:image/png;base64,{{ img }}" alt="Workload Pie Chart">
+    {% endif %}
+    <a href="/">Back to Main Menu</a>
+</body>
+</html>

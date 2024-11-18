@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Process Data</title>
+</head>
+<body>
+    <h1>Process Data</h1>
+    <form action="/process" method="post">
+        <h3>Exclude Sections:</h3>
+        {% for section in sections %}
+            <input type="checkbox" name="exclude_sections" value="{{ section }}">{{ section }}<br>
+        {% endfor %}
+        <button type="submit">Process</button>
+    </form>
+</body>
+</html>
