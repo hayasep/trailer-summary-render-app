@@ -1,14 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summary</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 8px;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+
+        tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .main-menu-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .main-menu-button:hover {
+            background-color: #0056b3;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
 </head>
 <body>
-    <h1>Summary</h1>
-    {{ tables|safe }}
-    {% if img %}
-    <img src="data:image/png;base64,{{ img }}" alt="Workload Pie Chart">
-    {% endif %}
-    <a href="/">Back to Main Menu</a>
+    <h1 style="text-align: center;">Summary</h1>
+
+    <h2>Trailer Names</h2>
+    <p>
+        {% if trailer_names %}
+            {{ ", ".join(trailer_names) }}
+        {% else %}
+            No trailers found.
+        {% endif %}
+    </p>
+
+    <h2>Summary Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Section</th>
+                <th>Full Case Cartons</th>
+                <th>Repack Cartons</th>
+                <th>Stocking Time (Hrs)</th>
+                <th>Workload %</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for section, row in summary_data.iterrows() %}
+            <tr>
+                <td><a href="{{ url_for('section_details', section=section) }}">{{ section }}</a></td>
+                <td>{{ row['FULL CASE CARTONS'] }}</td>
+                <td>{{ row['REPACK CARTONS'] }}</td>
+                <td>{{ row['STOCKING TIME (HRS)'] }}</td>
+                <td>{{ row['Workload %'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Workload Distribution Pie Chart</h2>
+    <img src="{{ chart_url }}" alt="Workload Distribution Pie Chart">
+
+    <a href="{{ url_for('main_menu') }}" class="main-menu-button">Main Menu</a>
 </body>
 </html>

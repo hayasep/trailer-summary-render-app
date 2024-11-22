@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Menu</title>
+    <style>
+        .uploaded-files {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .uploaded-files h3 {
+            margin-top: 0;
+        }
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Main Menu</h1>
+    <form action="{{ url_for('upload_files') }}" method="POST" enctype="multipart/form-data">
+        <label for="files">Upload Files:</label>
+        <input type="file" name="files" id="files" multiple>
+        <button type="submit">Upload</button>
+    </form>
+
+    {% if uploaded_files_info %}
+    <div class="uploaded-files">
+        <h3>Uploaded Files:</h3>
+        <ul>
+            {% for file_name, trailer_name in uploaded_files_info %}
+            <li>{{ file_name }} - Trailer: {{ trailer_name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+
+    <ul>
+        <li><a href="{{ url_for('process_data') }}">Process Data</a></li>
+        <li><a href="{{ url_for('summary_view') }}">View Summary</a></li>
+        <li><a href="{{ url_for('view_mappings') }}">View Mappings</a></li>
+        <li><a href="{{ url_for('reset_data') }}">Reset Data</a></li>
+    </ul>
+</body>
+</html>

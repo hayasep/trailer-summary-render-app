@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exclude Sections</title>
+</head>
+<body>
+    <h1>Exclude Sections</h1>
+    <form method="POST">
+        {% for section in sections %}
+        <label>
+            <input type="checkbox" name="sections" value="{{ section }}">
+            {{ section }}
+        </label><br>
+        {% endfor %}
+        <button type="submit">Exclude Selected Sections</button>
+    </form>
+    <br>
+    <a href="{{ url_for('main_menu') }}">Return to Main Menu</a>
+</body>
+</html>
