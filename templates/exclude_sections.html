@@ -7,16 +7,22 @@
 </head>
 <body>
     <h1>Exclude Sections</h1>
-    <form method="POST">
-        {% for section in sections %}
-        <label>
-            <input type="checkbox" name="sections" value="{{ section }}">
-            {{ section }}
-        </label><br>
-        {% endfor %}
-        <button type="submit">Exclude Selected Sections</button>
+    <form method="POST" action="{{ url_for('exclude_sections') }}">
+        <h3>Select sections to exclude:</h3>
+        <ul>
+            {% for section in sections %}
+                {% if section != "Uncategorized" %}
+                    <li>
+                        <label>
+                            <input type="checkbox" name="sections" value="{{ section }}">
+                            {{ section }}
+                        </label>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+        <button type="submit">View Summary</button>
     </form>
-    <br>
     <a href="{{ url_for('main_menu') }}">Return to Main Menu</a>
 </body>
 </html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Form</title>
+    <style>
+        form {
+            margin: 20px auto;
+            max-width: 800px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .submit-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Recap Email Input</h1>
+
+    <form method="POST">
+        <h2>Residual Push</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Section</th>
+                    <th>Carts</th>
+                    <th>Uboats</th>
+                    <th>Flats</th>
+                    <th>Pallets</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for section in sections %}
+                <tr>
+                    <td>{{ section }}</td>
+                    <td><input type="number" name="{{ section }}_push_carts" min="0" value="0"></td>
+                    <td><input type="number" name="{{ section }}_push_uboats" min="0" value="0"></td>
+                    <td><input type="number" name="{{ section }}_push_flats" min="0" value="0"></td>
+                    <td><input type="number" name="{{ section }}_push_pallets" min="0" value="0"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Backstock</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Section</th>
+                    <th>Carts</th>
+                    <th>Uboats</th>
+                    <th>Flats</th>
+                    <th>Pallets</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for section in sections %}
+                <tr>
+                    <td>{{ section }}</td>
+                    <td><input type="number" name="{{ section }}_backstock_carts" min="0" value="0"></td>
+                    <td><input type="number" name="{{ section }}_backstock_uboats" min="0" value="0"></td>
+                    <td><input type="number" name="{{ section }}_backstock_flats" min="0" value="0"></td>
+                    <td><input type="number" name="{{ section }}_backstock_pallets" min="0" value="0"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button type="submit" class="submit-button">Generate Recap Email</button>
+    </form>
+</body>
+</html>

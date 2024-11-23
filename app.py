@@ -73,7 +73,10 @@ def map_to_section(custom_block):
 @app.route("/")
 def main_menu():
     """Render the main menu."""
-    return render_template("main_menu.html", uploaded_files_info=uploaded_files_info)
+    global uploaded_files_info
+    return render_template("main_menu.html", uploaded_files=uploaded_files_info)
+
+
 
 @app.route("/upload", methods=["POST"])
 def upload_files():
@@ -118,7 +121,6 @@ def upload_files():
 
     return redirect(url_for("main_menu"))
 
-
 @app.route("/process", methods=["GET", "POST"])
 def process_data():
     """Process data and summarize it."""
@@ -129,6 +131,17 @@ def process_data():
     # Map sections
     all_data['Section'] = all_data['CUSTOM BLOCK'].apply(map_to_section)
 
+    # Log initial sections to debug the mapping
+    print("Initial Section Counts (Before Filtering):")
+    print(all_data['Section'].value_counts())
+
+    # Permanently exclude "Uncategorized" rows from all_data
+    all_data = all_data[all_data['Section'] != "Uncategorized"]
+
+    # Log filtered sections to confirm exclusion
+    print("Filtered Section Counts (After Removing Uncategorized):")
+    print(all_data['Section'].value_counts())
+
     # If it's a GET request, show the exclusion form
     if request.method == "GET":
         all_sections = sorted(all_data['Section'].unique())
@@ -138,9 +151,6 @@ def process_data():
     excluded_sections = request.form.getlist("sections")
     if excluded_sections:
         all_data = all_data[~all_data['Section'].isin(excluded_sections)]
-
-    # Exclude Uncategorized rows
-    all_data = all_data[all_data['Section'] != "Uncategorized"]
 
     # Ensure numeric columns for aggregation
     numeric_columns = ['FULL CASE CARTONS', 'REPACK CARTONS', 'STOCKING TIME (HRS)']
@@ -157,6 +167,11 @@ def process_data():
     else:
         summary['Workload %'] = 0
 
+    # Remove "Uncategorized" again if it still sneaks into summary
+    if "Uncategorized" in summary.index:
+        print("Uncategorized found in summary, removing it...")
+        summary = summary[summary.index != "Uncategorized"]
+
     # Add a Total row
     total_row = summary.sum(numeric_only=True).rename("Total")
     summary = pd.concat([summary, total_row.to_frame().T])
@@ -164,7 +179,13 @@ def process_data():
     # Round all numeric values to the nearest tenth
     summary = summary.round(1)
 
+    # Debug final summary
+    print("Final Summary (Post Processing):")
+    print(summary)
+
     return redirect(url_for("summary_view"))
+
+
 
 
 @app.route("/reset")
@@ -180,12 +201,15 @@ def reset_data():
 
 @app.route("/generate_chart")
 def generate_chart():
+    """Generate a pie chart for the summary data."""
     global summary
     if summary is None:
         return "No data to generate chart", 404
 
-    # Exclude the "Total" row
-    chart_data = summary.loc[summary.index != "Total", "Workload %"]
+    # Exclude the "Total" row and "Uncategorized" section
+    chart_data = summary.loc[
+        (summary.index != "Total") & (summary.index != "Uncategorized"), "Workload %"
+    ]
 
     # Generate pie chart
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -206,8 +230,8 @@ def generate_chart():
     output.seek(0)
 
     # Serve the image as a response
-    from flask import Response
     return Response(output, content_type="image/png")
+
 
 
 @app.route("/summary")
@@ -241,7 +265,7 @@ def view_mappings():
 
 @app.route("/exclude_sections", methods=["GET", "POST"])
 def exclude_sections():
-    global all_data
+    global all_data, summary
     if all_data.empty:
         return redirect(url_for("main_menu"))
 
@@ -252,11 +276,149 @@ def exclude_sections():
         # Get selected sections to exclude
         sections_to_exclude = request.form.getlist("sections")
         if sections_to_exclude:
-            all_data.drop(all_data[all_data['Section'].isin(sections_to_exclude)].index, inplace=True)
+            all_data = all_data[~all_data['Section'].isin(sections_to_exclude)]
 
-        return redirect(url_for("process_data"))
+        # Recalculate the summary after exclusions
+        numeric_columns = ['FULL CASE CARTONS', 'REPACK CARTONS', 'STOCKING TIME (HRS)']
+        for col in numeric_columns:
+            all_data[col] = pd.to_numeric(all_data[col], errors='coerce').fillna(0)
+
+        summary = all_data.groupby('Section')[numeric_columns].sum()
+
+        # Add the Workload % column
+        total_stocking_time = summary['STOCKING TIME (HRS)'].sum()
+        if total_stocking_time > 0:
+            summary['Workload %'] = (summary['STOCKING TIME (HRS)'] / total_stocking_time * 100).round(1)
+        else:
+            summary['Workload %'] = 0
+
+        # Add a Total row
+        total_row = summary.sum(numeric_only=True).rename("Total")
+        summary = pd.concat([summary, total_row.to_frame().T])
+
+        summary = summary.round(1)
+
+        return redirect(url_for("summary_view"))
 
     return render_template("exclude_sections.html", sections=all_sections)
+
+@app.route("/generate_email")
+def generate_email():
+    """Generate a recap email based on the processed data."""
+    global all_data
+
+    if all_data.empty:
+        return redirect(url_for("main_menu"))
+
+    # Categorize into push, backstock, and bulk backstock
+    push_sections = ['Kitchen', 'Stationery', 'Style', 'Food']  # Example sections for push
+    backstock_sections = ['HBA', 'Sports', 'Toys', 'Chemical-Paper', 'Seasonal']
+    bulk_backstock_sections = ['C-D']  # Example section for bulk backstock
+
+    push_data = all_data[all_data['Section'].isin(push_sections)]
+    backstock_data = all_data[all_data['Section'].isin(backstock_sections)]
+    bulk_backstock_data = all_data[all_data['Section'].isin(bulk_backstock_sections)]
+
+    # Count quantities for each type
+    def summarize_data(data):
+        summary = {}
+        for section in data['Section'].unique():
+            section_data = data[data['Section'] == section]
+            summary[section] = {
+                'flats': section_data['FULL CASE CARTONS'].sum(),
+                'carts': section_data['REPACK CARTONS'].sum(),
+                'pallets': section_data['STOCKING TIME (HRS)'].sum(),
+                # Add 'uboats' if available
+            }
+        return summary
+
+    push_summary = summarize_data(push_data)
+    backstock_summary = summarize_data(backstock_data)
+    bulk_backstock_summary = summarize_data(bulk_backstock_data)
+
+    # Format the email content
+    email_content = "Good morning team!\n\n"
+    email_content += "Here is the recap of what we left back:\n\n"
+
+    def format_section(title, data):
+        content = f"{title}:\n"
+        for section, counts in data.items():
+            content += f"{section}: {counts['flats']} flats, {counts['carts']} carts, {counts['pallets']} pallets\n"
+        return content
+
+    email_content += format_section("Push", push_summary)
+    email_content += format_section("Backstock", backstock_summary)
+    email_content += format_section("Bulk Backstock", bulk_backstock_summary)
+
+    email_content += "\nPlease let me know if you have any questions. Thank you!"
+
+    return render_template("email_preview.html", email_content=email_content)
+
+@app.route("/email_form", methods=["GET", "POST"])
+def email_form():
+    """Generate email form with Push and Backstock tables."""
+    global all_data
+
+    # Predefined sections if no trailer data is available
+    predefined_sections = [
+        'C-D', 'Food', 'Chemical-Paper', 'HBA', 'Infants',
+        'Style', 'Pets', 'Sports', 'Tech', 'Kitchen',
+        'BPG-CL-FA', 'Stationery', 'Seasonal', 'Toys'
+    ]
+
+    # Determine sections from data or fallback to predefined sections
+    sections = sorted(all_data['Section'].unique()) if not all_data.empty else predefined_sections
+
+    if request.method == "POST":
+        # Process the form data
+        push_data = {}
+        backstock_data = {}
+
+        for section in sections:
+            push_data[section] = {
+                'carts': int(request.form.get(f"{section}_push_carts", 0)),
+                'uboats': int(request.form.get(f"{section}_push_uboats", 0)),
+                'flats': int(request.form.get(f"{section}_push_flats", 0)),
+                'pallets': int(request.form.get(f"{section}_push_pallets", 0)),
+            }
+            backstock_data[section] = {
+                'carts': int(request.form.get(f"{section}_backstock_carts", 0)),
+                'uboats': int(request.form.get(f"{section}_backstock_uboats", 0)),
+                'flats': int(request.form.get(f"{section}_backstock_flats", 0)),
+                'pallets': int(request.form.get(f"{section}_backstock_pallets", 0)),
+            }
+
+        # Generate email content
+        email_content = "Good morning team!\n\n"
+        email_content += "Here is the recap of what we left back:\n\n"
+
+        # Add Push data
+        email_content += "Residual Push:\n"
+        for section, counts in push_data.items():
+            non_zero_values = [
+                f"{value} {key}" for key, value in counts.items() if value > 0
+            ]
+            if non_zero_values:  # Include only if any value is greater than 0
+                email_content += f"{section}: {', '.join(non_zero_values)}\n"
+
+        # Add Backstock data
+        email_content += "\nBackstock:\n"
+        for section, counts in backstock_data.items():
+            non_zero_values = [
+                f"{value} {key}" for key, value in counts.items() if value > 0
+            ]
+            if non_zero_values:  # Include only if any value is greater than 0
+                email_content += f"{section}: {', '.join(non_zero_values)}\n"
+
+        email_content += "\nPlease let me know if you have any questions. Thank you!"
+
+        # Render the email preview
+        return render_template("email_preview.html", email_content=email_content)
+
+    # Render the form
+    return render_template("email_form.html", sections=sections)
+
+
 
 
 if __name__ == "__main__":

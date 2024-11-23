@@ -3,49 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Menu</title>
+    <title>Trailer Summary Tool</title>
     <style>
-        .uploaded-files {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #ccc;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .button {
+            display: inline-block;
+            margin: 10px 15px;
+            padding: 15px 30px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
             border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
-        .uploaded-files h3 {
-            margin-top: 0;
+
+        .button:hover {
+            background-color: #0056b3;
         }
-        ul {
-            list-style-type: disc;
-            padding-left: 20px;
+
+        .file-list {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+        }
+
+        .file-list h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .file-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .file-list li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .file-list li span {
+            color: #6c757d;
+        }
+
+        form {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <h1>Main Menu</h1>
-    <form action="{{ url_for('upload_files') }}" method="POST" enctype="multipart/form-data">
-        <label for="files">Upload Files:</label>
-        <input type="file" name="files" id="files" multiple>
-        <button type="submit">Upload</button>
-    </form>
+    <header>
+        Trailer Summary Tool
+    </header>
+    <main>
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <label for="files">Upload Files:</label>
+            <input type="file" name="files" id="files" multiple>
+            <button type="submit" class="button">Upload</button>
+        </form>
 
-    {% if uploaded_files_info %}
-    <div class="uploaded-files">
-        <h3>Uploaded Files:</h3>
-        <ul>
-            {% for file_name, trailer_name in uploaded_files_info %}
-            <li>{{ file_name }} - Trailer: {{ trailer_name }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-    
+        {% if uploaded_files %}
+            <div class="file-list">
+                <h3>Files Uploaded:</h3>
+                <ul>
+                    {% for file, trailer in uploaded_files %}
+                        <li>{{ file }} {% if trailer %} - <span>{{ trailer }}</span>{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
 
-    <ul>
-        <li><a href="{{ url_for('process_data') }}">Process Data</a></li>
-        <li><a href="{{ url_for('summary_view') }}">View Summary</a></li>
-        <li><a href="{{ url_for('view_mappings') }}">View Mappings</a></li>
-        <li><a href="{{ url_for('reset_data') }}">Reset Data</a></li>
-    </ul>
+        <a href="/process" class="button">Process Data</a>
+        <a href="/summary" class="button">View Summary</a>
+        <a href="/mappings" class="button">View Mappings</a>
+        <a href="/reset" class="button" style="background-color: #dc3545;">Reset Data</a>
+        <a href="{{ url_for('email_form') }}" class="button" style="background-color: purple;">Generate Recap Email</a>
+
+
+    </main>
 </body>
 </html>
