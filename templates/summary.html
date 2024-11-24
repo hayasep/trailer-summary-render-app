@@ -5,17 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Summary</title>
     <style>
+        /* General styles */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            font-size: 16px;
         }
 
         th, td {
             border: 1px solid #ccc;
             text-align: center;
             padding: 8px;
-            word-wrap: break-word;
         }
 
         th {
@@ -42,41 +43,50 @@
             font-size: 16px;
         }
 
-        .main-menu-button:hover {
+        .main-menu-button:hover, .print-button:hover {
             background-color: #0056b3;
-        }
-
-        .print-button {
-            background-color: #28a745;
-            cursor: pointer;
-        }
-
-        .print-button:hover {
-            background-color: #218838;
         }
 
         img {
             display: block;
             margin: 20px auto;
+            max-width: 100%;
+            height: auto;
         }
 
-        /* Hide elements during printing */
+        /* Print-specific styles */
         @media print {
+            body {
+                margin: 0;
+                padding: 0;
+                font-size: 12px;
+            }
+
+            table {
+                font-size: 10px;
+                width: 70%;
+                margin: 0 auto;
+            }
+
+            th, td {
+                padding: 4px;
+            }
+
+            img {
+                max-width: 70%;
+                margin: 0 auto;
+            }
+
             .main-menu-button, .print-button {
                 display: none;
             }
         }
     </style>
-    <script>
-        function printSummary() {
-            window.print();
-        }
-    </script>
 </head>
 <body>
     <h1 style="text-align: center;">Summary</h1>
 
-    <h2>Trailer(s)</h2>
+    <h2>Trailer Names</h2>
     <p>
         {% if trailer_names %}
             {{ ", ".join(trailer_names) }}
@@ -85,7 +95,6 @@
         {% endif %}
     </p>
 
-    
     <table>
         <thead>
             <tr>
@@ -98,7 +107,7 @@
         </thead>
         <tbody>
             {% for section, row in summary_data.iterrows() %}
-            <tr style="{% if section == 'Total' %}font-weight: bold;{% endif %}">
+            <tr>
                 <td><a href="{{ url_for('section_details', section=section) }}">{{ section }}</a></td>
                 <td>{{ row['FULL CASE CARTONS'] }}</td>
                 <td>{{ row['REPACK CARTONS'] }}</td>
@@ -109,10 +118,9 @@
         </tbody>
     </table>
 
-    
     <img src="{{ chart_url }}" alt="Workload Distribution Pie Chart">
-
-    <button class="print-button" onclick="printSummary()">Print Summary</button>
+    <button class="print-button" onclick="window.print()">Print</button>
     <a href="{{ url_for('main_menu') }}" class="main-menu-button">Main Menu</a>
+
 </body>
 </html>

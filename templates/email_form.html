@@ -3,40 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Form</title>
+    <title>Generate Recap Email</title>
     <style>
-        form {
-            margin: 20px auto;
-            max-width: 800px;
-        }
-
         table {
-            width: 100%;
+            width: 80%;
+            margin: 0 auto 20px auto;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            font-size: 14px;
         }
 
         th, td {
             border: 1px solid #ccc;
             text-align: center;
-            padding: 8px;
+            padding: 4px;
+            word-wrap: break-word;
         }
 
         th {
             background-color: #f4f4f4;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 50px;
+            text-align: center;
+            font-size: 14px;
+            padding: 2px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            font-size: 20px;
         }
 
         .submit-button {
             display: block;
             margin: 20px auto;
-            padding: 10px 20px;
+            padding: 8px 16px;
             background-color: #007BFF;
             color: white;
-            text-align: center;
             text-decoration: none;
+            text-align: center;
             border-radius: 5px;
-            border: none;
-            font-size: 16px;
+            font-size: 14px;
+            cursor: pointer;
         }
 
         .submit-button:hover {
@@ -45,10 +55,10 @@
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">Recap Email Input</h1>
-
-    <form method="POST">
-        <h2>Residual Push</h2>
+    <h1>Generate Recap Email</h1>
+    
+    <form method="POST" action="{{ url_for('email_form') }}">
+        <h2>Push</h2>
         <table>
             <thead>
                 <tr>
@@ -57,16 +67,18 @@
                     <th>Uboats</th>
                     <th>Flats</th>
                     <th>Pallets</th>
+                    <th>Tubs</th>
                 </tr>
             </thead>
             <tbody>
                 {% for section in sections %}
                 <tr>
                     <td>{{ section }}</td>
-                    <td><input type="number" name="{{ section }}_push_carts" min="0" value="0"></td>
-                    <td><input type="number" name="{{ section }}_push_uboats" min="0" value="0"></td>
-                    <td><input type="number" name="{{ section }}_push_flats" min="0" value="0"></td>
-                    <td><input type="number" name="{{ section }}_push_pallets" min="0" value="0"></td>
+                    <td><input type="number" name="{{ section }}_push_carts" min="0"></td>
+                    <td><input type="number" name="{{ section }}_push_uboats" min="0"></td>
+                    <td><input type="number" name="{{ section }}_push_flats" min="0"></td>
+                    <td><input type="number" name="{{ section }}_push_pallets" min="0"></td>
+                    <td><input type="number" name="{{ section }}_push_tubs" min="0"></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -81,22 +93,24 @@
                     <th>Uboats</th>
                     <th>Flats</th>
                     <th>Pallets</th>
+                    <th>Tubs</th>
                 </tr>
             </thead>
             <tbody>
                 {% for section in sections %}
                 <tr>
                     <td>{{ section }}</td>
-                    <td><input type="number" name="{{ section }}_backstock_carts" min="0" value="0"></td>
-                    <td><input type="number" name="{{ section }}_backstock_uboats" min="0" value="0"></td>
-                    <td><input type="number" name="{{ section }}_backstock_flats" min="0" value="0"></td>
-                    <td><input type="number" name="{{ section }}_backstock_pallets" min="0" value="0"></td>
+                    <td><input type="number" name="{{ section }}_backstock_carts" min="0"></td>
+                    <td><input type="number" name="{{ section }}_backstock_uboats" min="0"></td>
+                    <td><input type="number" name="{{ section }}_backstock_flats" min="0"></td>
+                    <td><input type="number" name="{{ section }}_backstock_pallets" min="0"></td>
+                    <td><input type="number" name="{{ section }}_backstock_tubs" min="0"></td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        <button type="submit" class="submit-button">Generate Recap Email</button>
+        <button type="submit" class="submit-button">Generate Email</button>
     </form>
 </body>
 </html>

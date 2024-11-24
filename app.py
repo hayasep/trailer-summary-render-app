@@ -376,16 +376,18 @@ def email_form():
 
         for section in sections:
             push_data[section] = {
-                'carts': int(request.form.get(f"{section}_push_carts", 0)),
-                'uboats': int(request.form.get(f"{section}_push_uboats", 0)),
-                'flats': int(request.form.get(f"{section}_push_flats", 0)),
-                'pallets': int(request.form.get(f"{section}_push_pallets", 0)),
+                'carts': int(request.form.get(f"{section}_push_carts") or 0),
+                'uboats': int(request.form.get(f"{section}_push_uboats") or 0),
+                'flats': int(request.form.get(f"{section}_push_flats") or 0),
+                'pallets': int(request.form.get(f"{section}_push_pallets") or 0),
+                'tubs': int(request.form.get(f"{section}_push_tubs") or 0),
             }
             backstock_data[section] = {
-                'carts': int(request.form.get(f"{section}_backstock_carts", 0)),
-                'uboats': int(request.form.get(f"{section}_backstock_uboats", 0)),
-                'flats': int(request.form.get(f"{section}_backstock_flats", 0)),
-                'pallets': int(request.form.get(f"{section}_backstock_pallets", 0)),
+                'carts': int(request.form.get(f"{section}_backstock_carts") or 0),
+                'uboats': int(request.form.get(f"{section}_backstock_uboats") or 0),
+                'flats': int(request.form.get(f"{section}_backstock_flats") or 0),
+                'pallets': int(request.form.get(f"{section}_backstock_pallets") or 0),
+                'tubs': int(request.form.get(f"{section}_backstock_tubs") or 0),
             }
 
         # Generate email content
