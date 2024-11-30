@@ -28,7 +28,7 @@ automated_mapping = {
     'Stationery': ['STATIONERY', 'OFFICE'],
     'BPG-CL-FA': ['BPG', 'CL/FA', 'BULLSEYE'],
     'Sports': ['SPORTS', 'OUTDOORS', 'SPORT', 'LUGG', 'AUTO'],
-    'Seasonal': ['SEASONAL', 'HOLIDAY', 'GRILLING', 'SOIL', 'SEED', 'LAWN', 'G43'],
+    'Seasonal': ['SEASONAL', 'HOLIDAY', 'GRILLING', 'SOIL', 'SEED', 'LAWN', 'G43', 'Gift Wrap', 'Decor', 'Ornaments', 'Tree Tables', 'Tree Skirts', 'Tinsel', 'Wreaths', 'Lights and'],
     'Tech': ['TECH', 'ELECTRONICS', '13 - ELEC', 'ENTERTAINMENT'],
     'Style': ['STYLE', 'APPAREL', 'FOLDING', 'INTIMATES', 'NIT', 'HANGING'],
     'Food': ['FOOD', 'GROCERY', 'WATER', 'PASTA', 'SPICES', 'BAKING', 'CEREAL', 'COFFEE', 'CANDY', 'COOKIES', 'CHIPS', 'BEVERAGE']
