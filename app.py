@@ -356,72 +356,49 @@ def generate_email():
 
 @app.route("/email_form", methods=["GET", "POST"])
 def email_form():
-    """Generate email form with Push and Backstock tables."""
     global all_data
 
-    # Predefined sections if no trailer data is available
     predefined_sections = [
         'C-D', 'Food', 'Chemical-Paper', 'HBA', 'Infants',
         'Style', 'Pets', 'Sports', 'Tech', 'Kitchen',
         'BPG-CL-FA', 'Stationery', 'Seasonal', 'Toys'
     ]
 
-    # Determine sections from data or fallback to predefined sections
     sections = sorted(all_data['Section'].unique()) if not all_data.empty else predefined_sections
 
     if request.method == "POST":
-        # Process the form data
-        push_data = {}
-        backstock_data = {}
+        summary_data = request.form.get('summaryData')
+        last_night = request.form.get('last_night', '')
+        heavy_last_night = request.form.get('heavy_last_night', '')
+        tonight = request.form.get('tonight', '')
+        heavy_tonight = request.form.get('heavy_tonight', '')
 
-        for section in sections:
-            push_data[section] = {
-                'carts': int(request.form.get(f"{section}_push_carts") or 0),
-                'uboats': int(request.form.get(f"{section}_push_uboats") or 0),
-                'flats': int(request.form.get(f"{section}_push_flats") or 0),
-                'pallets': int(request.form.get(f"{section}_push_pallets") or 0),
-                'tubs': int(request.form.get(f"{section}_push_tubs") or 0),
-            }
-            backstock_data[section] = {
-                'carts': int(request.form.get(f"{section}_backstock_carts") or 0),
-                'uboats': int(request.form.get(f"{section}_backstock_uboats") or 0),
-                'flats': int(request.form.get(f"{section}_backstock_flats") or 0),
-                'pallets': int(request.form.get(f"{section}_backstock_pallets") or 0),
-                'tubs': int(request.form.get(f"{section}_backstock_tubs") or 0),
-            }
+        email_content = f"Good morning team!\n\nLast night we took a {last_night}."
+        if heavy_last_night:
+            email_content += f" It was heavy in {heavy_last_night}.\n\n"
 
-        # Generate email content
-        email_content = "Good morning team!\n\n"
-        email_content += "Here is the recap of what we left back:\n\n"
+        if summary_data:
+            summary_items = eval(summary_data)
+            for category, items in summary_items.items():
+                if items:
+                    email_content += f"{category}:\n"
+                    for item in items:
+                        email_content += f"- {item}\n"
+                    email_content += "\n"
 
-        # Add Push data
-        email_content += "Residual Push:\n"
-        for section, counts in push_data.items():
-            non_zero_values = [
-                f"{value} {key}" for key, value in counts.items() if value > 0
-            ]
-            if non_zero_values:  # Include only if any value is greater than 0
-                email_content += f"{section}: {', '.join(non_zero_values)}\n"
+        email_content += f"Tonight we will take a {tonight}."
+        if heavy_tonight:
+            email_content += f" It will be heavy in {heavy_tonight}.\n\n"
 
-        # Add Backstock data
-        email_content += "\nBackstock:\n"
-        for section, counts in backstock_data.items():
-            non_zero_values = [
-                f"{value} {key}" for key, value in counts.items() if value > 0
-            ]
-            if non_zero_values:  # Include only if any value is greater than 0
-                email_content += f"{section}: {', '.join(non_zero_values)}\n"
+        email_content += "Here is a visual summary of what we are taking tonight:\n"
+        chart_url = url_for('generate_chart')
+        email_content += f"<img src='{chart_url}' alt='Pie Chart'>\n\n"
 
-        email_content += "\nPlease let me know if you have any questions. Thank you!"
+        email_content += "Please let me know if you have any questions. Thank you!"
 
-        # Render the email preview
         return render_template("email_preview.html", email_content=email_content)
 
-    # Render the form
     return render_template("email_form.html", sections=sections)
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)

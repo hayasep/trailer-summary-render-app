@@ -5,47 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generate Recap Email</title>
     <style>
-        table {
-            width: 80%;
-            margin: 0 auto 20px auto;
-            border-collapse: collapse;
-            font-size: 14px;
+        .form-container {
+            width: 50%;
+            margin: 0 auto;
+            text-align: center;
         }
 
-        th, td {
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .summary-list {
+            margin-top: 20px;
             border: 1px solid #ccc;
-            text-align: center;
-            padding: 4px;
-            word-wrap: break-word;
+            padding: 10px;
         }
 
-        th {
-            background-color: #f4f4f4;
-            font-size: 14px;
+        .summary-list ul {
+            list-style: none;
+            padding: 0;
         }
 
-        input[type="number"] {
-            width: 50px;
-            text-align: center;
-            font-size: 14px;
-            padding: 2px;
-        }
-
-        h1, h2 {
-            text-align: center;
-            font-size: 20px;
+        .summary-list li {
+            margin: 5px 0;
         }
 
         .submit-button {
-            display: block;
-            margin: 20px auto;
-            padding: 8px 16px;
+            margin-top: 20px;
+            padding: 10px 20px;
             background-color: #007BFF;
             color: white;
-            text-decoration: none;
-            text-align: center;
+            border: none;
             border-radius: 5px;
-            font-size: 14px;
+            font-size: 16px;
             cursor: pointer;
         }
 
@@ -55,62 +47,141 @@
     </style>
 </head>
 <body>
-    <h1>Generate Recap Email</h1>
-    
-    <form method="POST" action="{{ url_for('email_form') }}">
-        <h2>Push</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Section</th>
-                    <th>Carts</th>
-                    <th>Uboats</th>
-                    <th>Flats</th>
-                    <th>Pallets</th>
-                    <th>Tubs</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for section in sections %}
-                <tr>
-                    <td>{{ section }}</td>
-                    <td><input type="number" name="{{ section }}_push_carts" min="0"></td>
-                    <td><input type="number" name="{{ section }}_push_uboats" min="0"></td>
-                    <td><input type="number" name="{{ section }}_push_flats" min="0"></td>
-                    <td><input type="number" name="{{ section }}_push_pallets" min="0"></td>
-                    <td><input type="number" name="{{ section }}_push_tubs" min="0"></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <h1 style="text-align: center;">Generate Recap Email</h1>
 
-        <h2>Backstock</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Section</th>
-                    <th>Carts</th>
-                    <th>Uboats</th>
-                    <th>Flats</th>
-                    <th>Pallets</th>
-                    <th>Tubs</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for section in sections %}
-                <tr>
-                    <td>{{ section }}</td>
-                    <td><input type="number" name="{{ section }}_backstock_carts" min="0"></td>
-                    <td><input type="number" name="{{ section }}_backstock_uboats" min="0"></td>
-                    <td><input type="number" name="{{ section }}_backstock_flats" min="0"></td>
-                    <td><input type="number" name="{{ section }}_backstock_pallets" min="0"></td>
-                    <td><input type="number" name="{{ section }}_backstock_tubs" min="0"></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="form-container">
+        <!-- Form to select section, vehicle, and quantity -->
+        <form id="emailForm" method="POST">
+            <div class="form-group">
+                <label for="section">Select Section:</label>
+                <select id="section" name="section">
+                    {% for section in sections %}
+                        <option value="{{ section }}">{{ section }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <button type="submit" class="submit-button">Generate Email</button>
-    </form>
+            <div class="form-group">
+                <label for="vehicle">Select Vehicle Type:</label>
+                <select id="vehicle" name="vehicle">
+                    <option value="Cart">Cart</option>
+                    <option value="Uboat">Uboat</option>
+                    <option value="Flat">Flat</option>
+                    <option value="Pallet">Pallet</option>
+                    <option value="Tub">Tub</option>
+                    <option value="Metro">Metro</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Enter Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" placeholder="Quantity">
+            </div>
+
+            <div class="form-group">
+                <label for="category">Select Type:</label>
+                <select id="category" name="category">
+                    <option value="Residual Push">Residual Push</option>
+                    <option value="Light Duty Backstock">Light Duty Backstock</option>
+                    <option value="Bulk Backstock">Bulk Backstock</option>
+                </select>
+            </div>
+
+            <button type="button" id="addButton" class="submit-button">Add</button>
+
+            <!-- Hidden field to store summary data -->
+            <input type="hidden" id="summaryData" name="summaryData">
+
+            <!-- What was taken last night -->
+            <div class="form-group">
+                <label for="last_night">What was taken last night:</label>
+                <select id="last_night" name="last_night">
+                    <option value="Single RDC">Single RDC</option>
+                    <option value="Single HDC">Single HDC</option>
+                    <option value="Double RDC">Double RDC</option>
+                    <option value="Double HDC">Double HDC</option>
+                    <option value="1&1">1&1</option>
+                    <option value="Triple RDC">Triple RDC</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="heavy_last_night">Sections that were heavy last night (if any):</label>
+                <input type="text" id="heavy_last_night" name="heavy_last_night" placeholder="e.g., Toys, Seasonal">
+            </div>
+
+            <!-- Tonight's workload -->
+            <div class="form-group">
+                <label for="tonight">What will be taken tonight:</label>
+                <select id="tonight" name="tonight">
+                    <option value="Single RDC">Single RDC</option>
+                    <option value="Single HDC">Single HDC</option>
+                    <option value="Double RDC">Double RDC</option>
+                    <option value="Double HDC">Double HDC</option>
+                    <option value="1&1">1&1</option>
+                    <option value="Triple RDC">Triple RDC</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="heavy_tonight">Sections that will be heavy tonight (if any):</label>
+                <input type="text" id="heavy_tonight" name="heavy_tonight" placeholder="e.g., HBA, Chemical-Paper">
+            </div>
+        </form>
+
+        <div class="summary-list">
+            <h3>Summary:</h3>
+            <ul id="summaryList"></ul>
+        </div>
+
+        <button type="submit" form="emailForm" class="submit-button">Generate Email</button>
+    </div>
+
+    <script>
+        const addButton = document.getElementById('addButton');
+        const summaryList = document.getElementById('summaryList');
+        const summaryData = document.getElementById('summaryData');
+
+        const summaryItems = {
+            "Residual Push": [],
+            "Light Duty Backstock": [],
+            "Bulk Backstock": []
+        };
+
+        addButton.addEventListener('click', () => {
+            const section = document.getElementById('section').value;
+            const vehicle = document.getElementById('vehicle').value;
+            const quantity = document.getElementById('quantity').value;
+            const category = document.getElementById('category').value;
+
+            if (quantity && quantity > 0) {
+                const singularVehicle = vehicle + (quantity > 1 ? "s" : "");
+                const summaryItem = `${section}: ${quantity} ${singularVehicle}`;
+                summaryItems[category].push(summaryItem);
+
+                summaryList.innerHTML = '';
+                for (const [key, items] of Object.entries(summaryItems)) {
+                    if (items.length > 0) {
+                        const categoryHeader = document.createElement('h4');
+                        categoryHeader.textContent = key;
+                        summaryList.appendChild(categoryHeader);
+
+                        const categoryList = document.createElement('ul');
+                        items.forEach(item => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = item;
+                            categoryList.appendChild(listItem);
+                        });
+                        summaryList.appendChild(categoryList);
+                    }
+                }
+
+                summaryData.value = JSON.stringify(summaryItems);
+                document.getElementById('quantity').value = '';
+            } else {
+                alert('Please enter a valid quantity.');
+            }
+        });
+    </script>
 </body>
 </html>
