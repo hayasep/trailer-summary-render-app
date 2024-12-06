@@ -390,15 +390,12 @@ def email_form():
         if heavy_tonight:
             email_content += f" It will be heavy in {heavy_tonight}.\n\n"
 
-        email_content += "Here is a visual summary of what we are taking tonight:\n"
-        chart_url = url_for('generate_chart')
-        email_content += f"<img src='{chart_url}' alt='Pie Chart'>\n\n"
-
         email_content += "Please let me know if you have any questions. Thank you!"
 
         return render_template("email_preview.html", email_content=email_content)
 
     return render_template("email_form.html", sections=sections)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
