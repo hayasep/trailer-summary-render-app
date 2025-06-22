@@ -20,18 +20,18 @@ uploaded_files_info = []  # List to store file name and trailer name pairs
 automated_mapping = {
     'Pets': ['PETS', 'DOG', 'CAT', 'LITTER'],
     'Toys': ['TOY', 'LEGOS', 'BOYS ACTION', 'E42'],
-    'Chemical-Paper': ['CHEMICAL', 'PAPER', 'BLEACH', 'LAUNDRY', 'HOUSEHOLD', 'AIR FRESHENER', '16 - FLOOR & DISH', 'Plates'],
-    'HBA': ['HBA', 'BEAUTY', 'HEALTH', 'COSMETICS', 'SOAP', 'HAIR', 'OTC', 'ORAL', 'FEMININE', 'Pads', 'Shampoo', 'Travel', 's Care', 'Mouthwash','Face Wash', 'Skin Care', 'Vitamins', 'Digestion', 'Tampons', 'Shave', '43', 'Toothpaste', 'First Aid'],
+    'Chemical-Paper': ['CHEMICAL', 'PAPER', 'BLEACH', 'LAUNDRY', 'HOUSEHOLD', 'AIR FRESHENER', 'DISH SOAP', 'Plates', 'TRASH BAGS'],
+    'HBA': ['HBA', 'BEAUTY', 'HEALTH', 'COSMETICS', 'HAIR', 'OTC', 'ORAL', 'FEMININE', 'Pads', 'Shampoo', 'Travel', 's Care', 'Mouthwash','Face Wash', 'Skin Care', 'Vitamins', 'Digestion', 'Tampons', 'Shave', 'Toothpaste', 'First Aid', 'PROTEIN', 'MENS'],
     'Infants': ['INFANT', 'BABY', 'NURSING', 'DIAPERS', 'BABY MONITORS', 'BABY MISC', 'BABY FOOD', ],
-    'C-D': ['C/D', 'BED', 'BATH', 'RUGS', 'LAMP', 'KITCHEN PLUG', 'APPLIANCE', '68 - PILLOWS', '70 - FURNITURE', 'STORAGE', 'PLASTIC', 'VACUUM', 'VIGNETTE', 'HEARTH'],
+    'C-D': ['C/D', 'BED', 'BATH', 'RUGS', 'LAMP', 'KITCHEN PLUG', 'APPLIANCE', 'PILLOWS D12', 'FURNITURE', 'STORAGE', 'PLASTIC', 'VACUUM', 'VIGNETTE', 'HEARTH'],
     'Kitchen': ['KITCHEN'],
-    'Stationery': ['STATIONERY', 'OFFICE'],
-    'BPG-CL-FA': ['BPG', 'CL/FA', 'BULLSEYE'],
+    'Stationery': ['STATIONERY', 'OFFICE', 'STATIONARY'],
+    'BPG-CL-FA': ['BPG', 'CL/FA', 'BULLSEYE','CHECKLANES'],
     'Sports': ['SPORTS', 'OUTDOORS', 'SPORT', 'LUGG', 'AUTO'],
-    'Seasonal': ['SEASONAL', 'HOLIDAY', 'GRILLING', 'SOIL', 'SEED', 'LAWN', 'G43', 'Gift Wrap', 'Decor', 'Ornaments', 'Tree Tables', 'Tree Skirts', 'Tinsel', 'Wreaths', 'Lights and', 'YARD FURNITURE', 'LIGHTS PILLOWS AND BUGZ', 'Yard', 'Fire', 'Pot', 'Garden', 'Seeds', 'Bugz'],
+    'Seasonal': ['SEASONAL', 'HOLIDAY', 'GRILLING', 'SOIL', 'SEED', 'LAWN', 'G43', 'Gift Wrap', 'Decor', 'Ornaments', 'Tree Tables', 'Tree Skirts', 'Tinsel', 'Wreaths', 'Lights and', 'YARD FURNITURE', 'LIGHTS PILLOWS AND BUGZ', 'Yard', 'Fire', 'Pot', 'Garden', 'Seeds', 'Bugz', 'F68', 'F77'],
     'Tech': ['TECH', 'ELECTRONICS', '13 - ELEC', 'ENTERTAINMENT'],
-    'Style': ['STYLE', 'APPAREL', 'FOLDING', 'INTIMATES', 'NIT', 'HANGING', 'NOP (A&A)'],
-    'Food': ['FOOD', 'GROCERY', 'WATER', 'PASTA', 'SPICES', 'BAKING', 'CEREAL', 'COFFEE', 'CANDY', 'COOKIES', 'CHIPS', 'BEVERAGE']
+    'Style': ['STYLE', 'APPAREL', 'FOLDING', 'INTIMATES', 'BOYS/GIRLS', 'HANGING', 'NOP (A&A)'],
+    'Food': ['FOOD', 'GROCERY', 'WATER', 'PASTA', 'SPICES', 'BAKING', 'CEREAL', 'COFFEE', 'CANDY', 'COOKIES', 'CHIPS', 'BEVERAGE','CANNED GOODS','BREAKFAST', 'JUICE']
 }
 
 
