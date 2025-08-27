@@ -28,7 +28,7 @@ automated_mapping = {
     'Stationery': ['STATIONERY', 'OFFICE', 'STATIONARY'],
     'BPG-CL-FA': ['BPG', 'CL/FA', 'BULLSEYE','CHECKLANES'],
     'Sports': ['SPORTS', 'OUTDOORS', 'SPORT', 'LUGG', 'AUTO'],
-    'Seasonal': ['SEASONAL', 'HOLIDAY', 'GRILLING', 'SOIL', 'SEED', 'LAWN', 'G43', 'Gift Wrap', 'Decor', 'Ornaments', 'Tree Tables', 'Tree Skirts', 'Tinsel', 'Wreaths', 'Lights and', 'YARD FURNITURE', 'LIGHTS PILLOWS AND BUGZ', 'Yard', 'Fire', 'Pot', 'Garden', 'Seeds', 'Bugz', 'F68', 'F77'],
+    'Seasonal': ['SEASONAL', 'HOLIDAY', 'GRILLING', 'SOIL', 'SEED', 'LAWN', 'G43', 'Gift Wrap', 'Decor', 'Ornaments', 'Tree Tables', 'Tree Skirts', 'Tinsel', 'Wreaths', 'Lights and', 'YARD FURNITURE', 'LIGHTS PILLOWS AND BUGZ', 'Yard', 'Fire', 'Pot', 'Garden', 'Seeds', 'Bugz', 'F68', 'F77', 'Halloween', 'TAT'],
     'Tech': ['TECH', 'ELECTRONICS', '13 - ELEC', 'ENTERTAINMENT'],
     'Style': ['STYLE', 'APPAREL', 'FOLDING', 'INTIMATES', 'BOYS/GIRLS', 'HANGING', 'NOP (A&A)'],
     'Food': ['FOOD', 'GROCERY', 'WATER', 'PASTA', 'SPICES', 'BAKING', 'CEREAL', 'COFFEE', 'CANDY', 'COOKIES', 'CHIPS', 'BEVERAGE','CANNED GOODS','BREAKFAST', 'JUICE']
