@@ -19,7 +19,7 @@ uploaded_files_info = []  # List to store file name and trailer name pairs
 # Automated mappings with updated section names
 automated_mapping = {
     'Pets': ['PETS', 'DOG', 'CAT', 'LITTER'],
-    'Toys': ['TOY', 'LEGOS', 'BOYS ACTION', 'E42'],
+    'Toys': ['TOY', 'LEGOS', 'BOYS ACTION', 'E42', 'Preschool', 'Boys Girls', 'Dolls Collectables', 'RC and Cars', 'Nerf'],
     'Chemical-Paper': ['CHEMICAL', 'PAPER', 'BLEACH', 'LAUNDRY', 'HOUSEHOLD', 'AIR FRESHENER', 'DISH SOAP', 'Plates', 'TRASH BAGS'],
     'HBA': ['HBA', 'BEAUTY', 'HEALTH', 'COSMETICS', 'HAIR', 'OTC', 'ORAL', 'FEMININE', 'Pads', 'Shampoo', 'Travel', 's Care', 'Mouthwash','Face Wash', 'Skin Care', 'Vitamins', 'Digestion', 'Tampons', 'Shave', 'Toothpaste', 'First Aid', 'PROTEIN', 'MENS'],
     'Infants': ['INFANT', 'BABY', 'NURSING', 'DIAPERS', 'BABY MONITORS', 'BABY MISC', 'BABY FOOD', ],
@@ -28,7 +28,7 @@ automated_mapping = {
     'Stationery': ['STATIONERY', 'OFFICE', 'STATIONARY'],
     'BPG-CL-FA': ['BPG', 'CL/FA', 'BULLSEYE','CHECKLANES'],
     'Sports': ['SPORTS', 'OUTDOORS', 'SPORT', 'LUGG', 'AUTO'],
-    'Seasonal': ['SEASONAL', 'HOLIDAY', 'GRILLING', 'SOIL', 'SEED', 'LAWN', 'G43', 'Gift Wrap', 'Decor', 'Ornaments', 'Tree Tables', 'Tree Skirts', 'Tinsel', 'Wreaths', 'Lights and', 'YARD FURNITURE', 'LIGHTS PILLOWS AND BUGZ', 'Yard', 'Fire', 'Pot', 'Garden', 'Seeds', 'Bugz', 'F68', 'F77', 'Halloween', 'TAT', 'Wrap', 'Mini Seasonal', 'Mini Christmas', 'Da Forest'],
+    'Seasonal': ['SEASONAL', 'HOLIDAY', 'GRILLING', 'SOIL', 'SEED', 'LAWN', 'G43', 'Gift Wrap', 'Decor', 'Ornaments', 'Tree Tables', 'Tree Skirts', 'Tinsel', 'Wreaths', 'Lights and', 'YARD FURNITURE', 'LIGHTS PILLOWS AND BUGZ', 'Yard', 'Fire', 'Pot', 'Garden', 'Seeds', 'Bugz', 'F68', 'F77', 'Halloween', 'TAT', 'Wrap', 'Mini Seasonal', 'Mini Christmas', 'Da Forest', 'TAT STYLE'],
     'Tech': ['TECH', 'ELECTRONICS', '13 - ELEC', 'ENTERTAINMENT'],
     'Style': ['STYLE', 'APPAREL', 'FOLDING', 'INTIMATES', 'BOYS/GIRLS', 'HANGING', 'NOP (A&A)'],
     'Food': ['FOOD', 'GROCERY', 'WATER', 'PASTA', 'SPICES', 'BAKING', 'CEREAL', 'COFFEE', 'CANDY', 'COOKIES', 'CHIPS', 'BEVERAGE','CANNED GOODS','BREAKFAST', 'JUICE']
