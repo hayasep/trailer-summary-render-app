@@ -23,7 +23,7 @@ automated_mapping = {
     'Chemical-Paper': ['CHEMICAL', 'PAPER', 'BLEACH', 'LAUNDRY', 'HOUSEHOLD', 'AIR FRESHENER', 'DISH SOAP', 'Plates', 'TRASH BAGS'],
     'HBA': ['HBA', 'BEAUTY', 'HEALTH', 'COSMETICS', 'HAIR', 'OTC', 'ORAL', 'FEMININE', 'Pads', 'Shampoo', 'Travel', 's Care', 'Mouthwash','Face Wash', 'Skin Care', 'Vitamins', 'Digestion', 'Tampons', 'Shave', 'Toothpaste', 'First Aid', 'PROTEIN', 'MENS'],
     'Infants': ['INFANT', 'BABY', 'NURSING', 'DIAPERS', 'BABY MONITORS', 'BABY MISC', 'BABY FOOD', ],
-    'C-D': ['C/D', 'BED', 'BATH', 'RUGS', 'LAMP', 'KITCHEN PLUG', 'APPLIANCE', 'PILLOWS D12', 'FURNITURE', 'STORAGE', 'PLASTIC', 'VACUUM', 'VIGNETTE', 'HEARTH', 'MIRRORS/WALL DECOR'],
+    'C-D': ['C/D', 'BED', 'BATH', 'RUGS', 'LAMP', 'KITCHEN PLUG', 'APPLIANCE', 'PILLOWS D12', 'FURNITURE', 'STORAGE', 'PLASTIC', 'VACUUM', 'VIGNETTE', 'HEARTH', 'MIRRORS/WALL DECOR', 'HOME DECOR'],
     'Kitchen': ['KITCHEN'],
     'Stationery': ['STATIONERY', 'OFFICE', 'STATIONARY'],
     'BPG-CL-FA': ['BPG', 'CL/FA', 'BULLSEYE','CHECKLANES'],
