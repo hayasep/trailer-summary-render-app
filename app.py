@@ -1,6 +1,6 @@
 import matplotlib
 matplotlib.use('Agg')  # Use non-GUI backend for rendering
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file
 import pandas as pd
 import re
 import io
@@ -244,6 +244,188 @@ def summary_view():
     # Pass the chart URL to the template
     chart_url = url_for("generate_chart")
     return render_template("summary.html", summary_data=summary, trailer_names=trailer_names, chart_url=chart_url)
+
+
+
+@app.route("/download_breakout_pdf")
+def download_breakout_pdf():
+    """Generate a printable Inbound Breakout PDF with cases/repacks and stocking time."""
+    global summary
+    if summary is None:
+        return redirect(url_for("main_menu"))
+
+    from io import BytesIO
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.units import inch
+    from reportlab.pdfgen import canvas
+    from reportlab.pdfbase import pdfmetrics
+
+    def to_float(value, default=0.0):
+        """Convert a value to float safely."""
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return default
+
+    def pluralize_count(count, singular, plural):
+        """Return a count with the correct singular/plural label."""
+        return f"{count} {singular if count == 1 else plural}"
+
+    def format_case_repack(cases_value, repacks_value):
+        """Format case/repack counts like: 50 cases / 20 repacks.
+        If repacks are 0, only show cases.
+        """
+        cases = int(round(to_float(cases_value)))
+        repacks = int(round(to_float(repacks_value)))
+
+        cases_text = pluralize_count(cases, "case", "cases")
+        if repacks <= 0:
+            return cases_text
+
+        repacks_text = pluralize_count(repacks, "repack", "repacks")
+        return f"{cases_text} / {repacks_text}"
+
+    def format_hours_fraction(hours_value):
+        """Round stocking time to the nearest quarter hour and format with clean fraction glyphs.
+        Examples: 5.4 -> 5½ hrs, 3.2 -> 3¼ hrs.
+        """
+        hours = max(0.0, to_float(hours_value))
+        quarters = int((hours * 4) + 0.5)
+        whole_hours = quarters // 4
+        quarter_part = quarters % 4
+
+        fraction_text = {
+            0: "",
+            1: "¼",
+            2: "½",
+            3: "¾",
+        }[quarter_part]
+
+        if whole_hours and fraction_text:
+            return f"{whole_hours}{fraction_text} hours"
+        if whole_hours:
+            return f"{whole_hours} hours"
+        if fraction_text:
+            return f"{fraction_text} hours"
+        return "0 hours"
+
+    sections = [
+        ("Chem/Paper", "Chemical-Paper"),
+        ("Pets", "Pets"),
+        ("HBA", "HBA"),
+        ("Stationery", "Stationery"),
+        ("Kitchen", "Kitchen"),
+        ("C&D", "C-D"),
+        ("Toy", "Toys"),
+        ("Sports", "Sports"),
+        ("Seasonal", "Seasonal"),
+        ("Infants", "Infants"),
+        ("Style", "Style"),
+        ("Tech", "Tech"),
+        ("Food", "Food"),
+    ]
+
+    output = BytesIO()
+    c = canvas.Canvas(output, pagesize=letter)
+    page_width, page_height = letter
+
+    # Page and table layout. These values are tuned to match your breakout sheet.
+    left = 0.32 * inch
+    table_top = 9.55 * inch
+    table_width = page_width - (0.64 * inch)
+
+    col1_width = 2.45 * inch
+    col3_width = 1.05 * inch
+    col2_width = table_width - col1_width - col3_width
+    row_height = 0.58 * inch
+
+    x1 = left
+    x2 = x1 + col1_width
+    x3 = x2 + col2_width
+    x4 = x1 + table_width
+    table_bottom = table_top - (row_height * len(sections))
+
+    # Main title
+    c.setFont("Helvetica-Bold", 24)
+    c.drawCentredString(page_width / 2, 10.48 * inch, "Inbound Breakout")
+
+    # Column titles above the table, centered and without a bordered title row.
+    c.setFont("Helvetica-Bold", 12)
+    c.drawCentredString(x1 + col1_width / 2, table_top + 0.16 * inch, "During Unload")
+    c.drawCentredString(x2 + col2_width / 2, table_top + 0.16 * inch, "After Unload")
+    c.drawCentredString(x3 + col3_width / 2, table_top + 0.16 * inch, "Stocking Time (Hrs)")
+
+    # Table grid
+    c.setLineWidth(0.8)
+    for x in (x1, x2, x3, x4):
+        c.line(x, table_top, x, table_bottom)
+
+    for i in range(len(sections) + 1):
+        y = table_top - (i * row_height)
+        c.line(x1, y, x4, y)
+
+    # Row labels and auto-filled stocking data.
+    section_font_size = 9.5
+    c.setFont("Helvetica", section_font_size)
+
+    for i, (display_name, summary_key) in enumerate(sections):
+        y_top = table_top - (i * row_height)
+        label_y = y_top - 0.15 * inch
+
+        # Section labels slightly high in each row for more writing room.
+        c.setFont("Helvetica", section_font_size)
+        c.drawString(x1 + 0.10 * inch, label_y, display_name)
+        c.drawString(x2 + 0.10 * inch, label_y, display_name)
+
+        # Auto-fill cases / repacks and stocking time in the right column.
+        if summary_key in summary.index:
+            case_repack_text = format_case_repack(
+                summary.loc[summary_key, "FULL CASE CARTONS"],
+                summary.loc[summary_key, "REPACK CARTONS"]
+            )
+            hours_text = format_hours_fraction(summary.loc[summary_key, "STOCKING TIME (HRS)"])
+
+            center_x = x3 + col3_width / 2
+
+            # Case/repack count: slightly smaller, regular weight, lowercase labels.
+            c.setFont("Helvetica", 7.0)
+            c.drawCentredString(center_x, y_top - 0.17 * inch, case_repack_text)
+
+            # Stocking time: bold number/fraction with smaller regular "hrs".
+            hours_number = hours_text.replace(" hours", "")
+            number_font = "Helvetica-Bold"
+            number_size = 13.2
+            hrs_font = "Helvetica"
+            hrs_size = 8.5
+            space = " "
+
+            number_width = pdfmetrics.stringWidth(hours_number, number_font, number_size)
+            space_width = pdfmetrics.stringWidth(space, hrs_font, hrs_size)
+            hrs_width = pdfmetrics.stringWidth("hours", hrs_font, hrs_size)
+            total_width = number_width + space_width + hrs_width
+            start_x = center_x - (total_width / 2)
+            baseline_y = y_top - 0.42 * inch
+
+            c.setFont(number_font, number_size)
+            c.drawString(start_x, baseline_y, hours_number)
+            c.setFont(hrs_font, hrs_size)
+            c.drawString(start_x + number_width + space_width, baseline_y, "hours")
+
+    # Bottom labels
+    c.setFont("Helvetica-Bold", 11)
+    bottom_label_y = table_bottom - 0.27 * inch
+    c.drawString(x1, bottom_label_y, "4AM Team Members:")
+    c.drawString(x1 + 3.65 * inch, bottom_label_y, "Residual Push:")
+
+    c.save()
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="Inbound_Breakout.pdf",
+        mimetype="application/pdf"
+    )
 
 
 @app.route("/details/<section>")
