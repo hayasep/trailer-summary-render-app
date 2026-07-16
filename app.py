@@ -285,29 +285,28 @@ def download_breakout_pdf():
         repacks_text = pluralize_count(repacks, "repack", "repacks")
         return f"{cases_text} / {repacks_text}"
 
-    def format_hours_fraction(hours_value):
-        """Round stocking time to the nearest quarter hour and format with clean fraction glyphs.
-        Examples: 5.4 -> 5½ hrs, 3.2 -> 3¼ hrs.
+    def format_stocking_time(hours_value):
+        """Round stocking time to the nearest 15 minutes and format as hours/minutes.
+
+        Examples:
+            1.25 -> 1 hr 15 min
+            2.50 -> 2 hrs 30 min
+            0.75 -> 45 min
         """
         hours = max(0.0, to_float(hours_value))
-        quarters = int((hours * 4) + 0.5)
-        whole_hours = quarters // 4
-        quarter_part = quarters % 4
+        total_minutes = int((hours * 60 + 7.5) // 15) * 15
 
-        fraction_text = {
-            0: "",
-            1: "¼",
-            2: "½",
-            3: "¾",
-        }[quarter_part]
+        whole_hours, minutes = divmod(total_minutes, 60)
 
-        if whole_hours and fraction_text:
-            return f"{whole_hours}{fraction_text} hours"
+        parts = []
         if whole_hours:
-            return f"{whole_hours} hours"
-        if fraction_text:
-            return f"{fraction_text} hours"
-        return "0 hours"
+            hour_label = "hr" if whole_hours == 1 else "hrs"
+            parts.append(f"{whole_hours} {hour_label}")
+
+        if minutes:
+            parts.append(f"{minutes} min")
+
+        return " ".join(parts) if parts else "0 min"
 
     sections = [
         ("Chem/Paper", "Chemical-Paper"),
@@ -353,7 +352,7 @@ def download_breakout_pdf():
     c.setFont("Helvetica-Bold", 12)
     c.drawCentredString(x1 + col1_width / 2, table_top + 0.16 * inch, "During Unload")
     c.drawCentredString(x2 + col2_width / 2, table_top + 0.16 * inch, "After Unload")
-    c.drawCentredString(x3 + col3_width / 2, table_top + 0.16 * inch, "Stocking Time (Hrs)")
+    c.drawCentredString(x3 + col3_width / 2, table_top + 0.16 * inch, "Stocking Time")
 
     # Table grid
     c.setLineWidth(0.8)
@@ -383,7 +382,7 @@ def download_breakout_pdf():
                 summary.loc[summary_key, "FULL CASE CARTONS"],
                 summary.loc[summary_key, "REPACK CARTONS"]
             )
-            hours_text = format_hours_fraction(summary.loc[summary_key, "STOCKING TIME (HRS)"])
+            hours_text = format_stocking_time(summary.loc[summary_key, "STOCKING TIME (HRS)"])
 
             center_x = x3 + col3_width / 2
 
@@ -391,25 +390,19 @@ def download_breakout_pdf():
             c.setFont("Helvetica", 7.0)
             c.drawCentredString(center_x, y_top - 0.17 * inch, case_repack_text)
 
-            # Stocking time: bold number/fraction with smaller regular "hrs".
-            hours_number = hours_text.replace(" hours", "")
-            number_font = "Helvetica-Bold"
-            number_size = 13.2
-            hrs_font = "Helvetica"
-            hrs_size = 8.5
-            space = " "
+            # Stocking time: centered and automatically reduced only when needed.
+            time_font = "Helvetica-Bold"
+            time_font_size = 11.5
+            available_width = col3_width - (0.10 * inch)
 
-            number_width = pdfmetrics.stringWidth(hours_number, number_font, number_size)
-            space_width = pdfmetrics.stringWidth(space, hrs_font, hrs_size)
-            hrs_width = pdfmetrics.stringWidth("hours", hrs_font, hrs_size)
-            total_width = number_width + space_width + hrs_width
-            start_x = center_x - (total_width / 2)
-            baseline_y = y_top - 0.42 * inch
+            while (
+                time_font_size > 8.0
+                and pdfmetrics.stringWidth(hours_text, time_font, time_font_size) > available_width
+            ):
+                time_font_size -= 0.5
 
-            c.setFont(number_font, number_size)
-            c.drawString(start_x, baseline_y, hours_number)
-            c.setFont(hrs_font, hrs_size)
-            c.drawString(start_x + number_width + space_width, baseline_y, "hours")
+            c.setFont(time_font, time_font_size)
+            c.drawCentredString(center_x, y_top - 0.42 * inch, hours_text)
 
     # Bottom labels
     c.setFont("Helvetica-Bold", 11)
