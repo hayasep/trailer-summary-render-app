@@ -1,113 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trailer Summary Tool</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f9fa;
-        }
-
-        header {
-            background-color: #007BFF;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-        }
-
-        main {
-            padding: 20px;
-            text-align: center;
-        }
-
-        .button {
-            display: inline-block;
-            margin: 10px 15px;
-            padding: 15px 30px;
-            background-color: #007BFF;
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-
-        .button:hover {
-            background-color: #0056b3;
-        }
-
-        .file-list {
-            margin-top: 20px;
-            text-align: left;
-            max-width: 600px;
-            margin: 20px auto;
-            background: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-        }
-
-        .file-list h3 {
-            margin: 0 0 10px;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .file-list ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .file-list li {
-            margin-bottom: 8px;
-            font-size: 14px;
-            word-wrap: break-word;
-        }
-
-        .file-list li span {
-            color: #6c757d;
-        }
-
-        form {
-            margin-bottom: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trailer Summary</title>
+  <style>
+    :root { color-scheme:dark; --text:#e8edf4; --muted:#96a4b6; --border:#303b4b; --accent:#81a9c5; --background:#111820; --panel:#1b2530; --soft:#253343; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--background); color:var(--text); font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.5; }
+    main { width:min(100% - 36px,560px); margin:clamp(42px,9vh,100px) auto 64px; }
+    h1 { font-size:clamp(26px,4vw,32px); letter-spacing:-.045em; line-height:1.2; text-align:center; margin:0 0 9px; font-weight:700; }
+    .subtitle { text-align:center; color:var(--muted); margin:0 0 36px; font-size:14px; }
+    .panel { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:0 12px 32px rgba(0,0,0,.12); }
+    .section-title { font-size:13px; font-weight:650; margin:0 0 12px; }
+    .upload-zone { border:1.5px dashed #435367; border-radius:12px; padding:28px 18px; text-align:center; background:#1e2a36; }
+    .upload-zone svg { display:block; margin:0 auto 12px; color:var(--accent); }
+    .upload-zone strong { display:block; font-size:14px; margin-bottom:3px; }
+    .hint { color:var(--muted); font-size:12px; margin:0 0 16px; }
+    input[type=file] { max-width:100%; font:inherit; font-size:12px; color:var(--muted); }
+    input[type=file]::file-selector-button { padding:8px 12px; background:#314357; border:1px solid #4b6177; border-radius:7px; color:var(--text); font-weight:600; cursor:pointer; margin-right:10px; }
+    input[type=file]::file-selector-button:hover { background:#3b5067; }
+    .btn { display:flex; justify-content:center; align-items:center; min-height:43px; padding:10px 14px; border-radius:9px; font:inherit; font-size:13px; font-weight:600; text-align:center; text-decoration:none; cursor:pointer; transition:background .15s,border-color .15s,transform .15s; }
+    .btn:focus-visible, input:focus-visible { outline:2px solid #a2c6e0; outline-offset:3px; }
+    .btn-primary { width:100%; background:#426985; border:1px solid #557f9e; color:#fff; margin-top:14px; }
+    .btn-primary:hover { background:#507b9a; }
+    .btn-secondary { background:var(--soft); border:1px solid #3a4c60; color:#c6d7e6; }
+    .btn-secondary:hover { background:#304358; border-color:#607b95; }
+    .btn-process { width:100%; min-height:56px; font-size:16px; background:#245c93; border:1px solid #3979b5; color:#f4f9ff; margin-bottom:12px; }
+    .btn-process:hover { background:#2d6eab; border-color:#5a96ce; }
+    .btn-reset { width:100%; min-height:54px; font-size:15px; background:#71353b; border:1px solid #9b4a52; color:#ffe5e6; margin-top:20px; }
+    .btn-reset:hover { background:#884048; border-color:#b95b65; }
+    .divider { height:1px; background:var(--border); margin:23px 0; }
+    .actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .uploaded { margin-top:20px; border:1px solid var(--border); border-radius:10px; padding:14px 16px; background:#202d39; }
+    .uploaded h2 { font-size:13px; margin:0 0 8px; }
+    .uploaded ul { list-style:none; margin:0; padding:0; }
+    .uploaded li { padding:8px 0; font-size:12px; overflow-wrap:anywhere; border-top:1px solid #334254; }
+    .uploaded li:first-child { border-top:0; }
+    .trailer { display:block; color:var(--muted); margin-top:2px; }
+    .footer { color:#718194; text-align:center; font-size:11px; margin-top:24px; }
+    @media (max-width:420px) { .panel { padding:17px; } .actions { grid-template-columns:1fr; } .subtitle { margin-bottom:24px; } }
+  </style>
 </head>
 <body>
-    <header>
-        Trailer Summary Tool
-    </header>
-    <main>
-        <form action="/upload" method="POST" enctype="multipart/form-data">
-            <label for="files">Upload Files:</label>
-            <input type="file" name="files" id="files" multiple>
-            <button type="submit" class="button">Upload</button>
-        </form>
-
-        {% if uploaded_files %}
-            <div class="file-list">
-                <h3>Files Uploaded:</h3>
-                <ul>
-                    {% for file, trailer in uploaded_files %}
-                        <li>{{ file }} {% if trailer %} - <span>{{ trailer }}</span>{% endif %}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
-
-        <a href="/process" class="button">Process Data</a>
-        <a href="/summary" class="button">View Summary</a>
-        <a href="/mappings" class="button">View Mappings</a>
-        <a href="/reset" class="button" style="background-color: #dc3545;">Reset Data</a>
-        <a href="{{ url_for('email_form') }}" class="button" style="background-color: purple;">Generate Recap Email</a>
-
-
-    </main>
+  <main>
+    <h1>Trailer Summary</h1>
+    <p class="subtitle">Upload and analyze replenishment summaries.</p>
+    <div class="panel">
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <div class="upload-zone">
+          <svg width="29" height="29" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+          <strong>Upload RDC or HDC files</strong>
+          <p class="hint">CSV or Excel · Multiple files supported</p>
+          <input type="file" name="files" id="files" accept=".csv,.xlsx" multiple required aria-label="Choose replenishment summary files">
+        </div>
+        <button class="btn btn-primary" type="submit">Upload Files</button>
+      </form>
+      {% if uploaded_files %}
+      <section class="uploaded" aria-label="Uploaded files">
+        <h2>Uploaded files ({{ uploaded_files|length }})</h2>
+        <ul>
+          {% for file, trailer in uploaded_files %}
+          <li>{{ file }}{% if trailer %}<span class="trailer">{{ trailer }}</span>{% endif %}</li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+      <div class="divider"></div>
+      <p class="section-title">Your workspace</p>
+      <a class="btn btn-process" href="/process">Process Data</a>
+      <a class="btn btn-reset" href="/reset" onclick="return confirm('Clear all uploaded report data and start over?');">Reset Data</a>
+      <div class="actions">
+        <a class="btn btn-secondary" href="/summary">View Summary</a>
+        <a class="btn btn-secondary" href="/mappings">View Mappings</a>
+        <a class="btn btn-secondary" href="/stocking-rates">Stocking Rates &amp; Formulas</a>
+      </div>
+    </div>
+    <p class="footer">Inbound planning tools</p>
+  </main>
 </body>
 </html>
