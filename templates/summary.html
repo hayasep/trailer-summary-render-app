@@ -1,127 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Summary</title>
-    <style>
-        /* General styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 16px;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            text-align: center;
-            padding: 8px;
-        }
-
-        th {
-            background-color: #f4f4f4;
-        }
-
-        tr:nth-child(odd) {
-            background-color: #f9f9f9;
-        }
-
-        tr:nth-child(even) {
-            background-color: #ffffff;
-        }
-
-        .main-menu-button, .print-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            text-decoration: none;
-            text-align: center;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .main-menu-button:hover, .print-button:hover {
-            background-color: #0056b3;
-        }
-
-        img {
-            display: block;
-            margin: 20px auto;
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* Print-specific styles */
-        @media print {
-            body {
-                margin: 0;
-                padding: 0;
-                font-size: 12px;
-            }
-
-            table {
-                font-size: 10px;
-                width: 70%;
-                margin: 0 auto;
-            }
-
-            th, td {
-                padding: 4px;
-            }
-
-            img {
-                max-width: 70%;
-                margin: 0 auto;
-            }
-
-            .main-menu-button, .print-button {
-                display: none;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summary</title>
+<style>
+  body { font-family: Arial, sans-serif; color: #202733; margin: 22px; }
+  h1 { text-align: center; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 16px; }
+  th, td { border: 1px solid #ccc; text-align: center; padding: 8px; }
+  th { background-color: #f4f4f4; }
+  tbody tr:nth-child(odd) { background-color: #f9f9f9; }
+  tbody tr:nth-child(even) { background-color: #fff; }
+  .main-menu-button, .print-button { display: block; margin: 20px auto; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; text-align: center; border: 0; border-radius: 5px; font-size: 16px; cursor: pointer; }
+  .main-menu-button:hover, .print-button:hover { background-color: #0056b3; }
+  .chart { display: block; margin: 20px auto; max-width: 100%; height: auto; }
+  @page { size: letter portrait; margin: 0.35in 0.4in; }
+  @media print {
+    html, body { width: auto; margin: 0; padding: 0; font-size: 12px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h1 { font-size: 19px; margin: 0 0 8px; line-height: 1.15; }
+    h2 { font-size: 13px; margin: 0 0 3px; line-height: 1.15; }
+    .trailer-names { font-size: 11px; margin: 0 0 10px; line-height: 1.2; }
+    table { width: 100%; margin: 0 auto 12px; font-size: 11px; table-layout: auto; page-break-inside: avoid; }
+    th, td { padding: 5px 4px; line-height: 1.15; }
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; }
+    .chart { width: auto; max-width: 100%; height: auto; max-height: 5.0in; object-fit: contain; margin: 6px auto 0; break-inside: avoid; }
+    .main-menu-button, .print-button { display: none !important; }
+  }
+</style>
 </head>
 <body>
-    <h1 style="text-align: center;">Summary</h1>
-
-    <h2>Trailer Names</h2>
-    <p>
-        {% if trailer_names %}
-            {{ ", ".join(trailer_names) }}
-        {% else %}
-            No trailers found.
-        {% endif %}
-    </p>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Section</th>
-                <th>Full Case Cartons</th>
-                <th>Repack Cartons</th>
-                <th>Stocking Time (Hrs)</th>
-                <th>Workload %</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for section, row in summary_data.iterrows() %}
-            <tr>
-                <td><a href="{{ url_for('section_details', section=section) }}">{{ section }}</a></td>
-                <td>{{ row['FULL CASE CARTONS'] }}</td>
-                <td>{{ row['REPACK CARTONS'] }}</td>
-                <td>{{ row['STOCKING TIME (HRS)'] }}</td>
-                <td>{{ row['Workload %'] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <img src="{{ chart_url }}" alt="Workload Distribution Pie Chart">
-    <a href="{{ url_for('download_breakout_pdf') }}" class="print-button">Download Inbound Breakout PDF</a>
-    <button class="print-button" onclick="window.print()">Print</button>
-    <a href="{{ url_for('main_menu') }}" class="main-menu-button">Main Menu</a>
-
+  <h1>Summary</h1>
+  <h2>Trailer Names</h2>
+  <p class="trailer-names">{% if trailer_names %}{{ ", ".join(trailer_names) }}{% else %}No trailers found.{% endif %}</p>
+  <table>
+    <thead><tr><th>Section</th><th>Full Case Cartons</th><th>Repack Cartons</th><th>Stocking Time (Hrs)</th><th>Workload %</th></tr></thead>
+    <tbody>
+    {% for section, row in summary_data.iterrows() %}
+      <tr>
+        <td><a href="{{ url_for('section_details', section=section) }}">{{ section }}</a></td>
+        <td>{{ row['FULL CASE CARTONS'] }}</td>
+        <td>{{ row['REPACK CARTONS'] }}</td>
+        <td>{{ row['STOCKING TIME (HRS)'] }}</td>
+        <td>{{ row['Workload %'] }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <img class="chart" src="{{ chart_url }}" alt="Workload Distribution Pie Chart">
+  <a href="{{ url_for('download_breakout_pdf') }}" class="print-button">Download Inbound Breakout PDF</a>
+  <button type="button" class="print-button" onclick="window.print()">Print</button>
+  <a href="{{ url_for('main_menu') }}" class="main-menu-button">Main Menu</a>
 </body>
 </html>
